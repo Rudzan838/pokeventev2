@@ -251,25 +251,39 @@
 
         // Fonction pour afficher l'historique
         function showHistorique() {
-            const html = historique.map((transaction, index) => `
-                <tr>
-                    <td>${transaction.date}</td>
-                    <td>${transaction.type}</td>
-                    <td>${transaction.product}</td>
-                    <td>${transaction.quantity}</td>
-                    <td>${transaction.price.toFixed(2)}€</td>
-                    <td>${(transaction.quantity * transaction.price).toFixed(2)}€</td>
-                    <td>
-                        <button class="action-btn supprimer-btn" 
-                                onclick="supprimerTransaction(${index})">
-                            🗑️
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+    const html = historique.map((transaction, index) => `
+        <tr>
+            <td>${transaction.date}</td>
+            <td>${transaction.type}</td>
+            <td>${transaction.product}</td>
+            <td>${transaction.quantity}</td>
+            <td>${transaction.price.toFixed(2)}€</td>
+            <td>${(transaction.quantity * transaction.price).toFixed(2)}€</td>
+            <td>
+                <button class="action-btn supprimer-btn" 
+                        onclick="supprimerTransaction(${index})">
+                    🗑️ 
+                </button>
+            </td>
+        </tr>
+    `).join('');
 
-            document.getElementById('historiqueContent').innerHTML = html;
-        }
+    document.getElementById('historiqueContent').innerHTML = html;
+}
+
+function supprimerTransaction(index) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette transaction ?')) return;
+
+    // Supprimer la transaction de l'historique
+    historique.splice(index, 1);
+
+    // Mettre à jour le stockage local
+    updateStorage();
+
+    // Recharger l'affichage
+    showHistorique();
+    updateBilan();
+}
 
         // Fonction pour supprimer une transaction
         function supprimerTransaction(index) {
