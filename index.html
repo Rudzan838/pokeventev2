@@ -628,23 +628,30 @@
             updateBilan();
         }
 
-        // Fonction pour réinitialiser la base de données
-        function resetDatabase() {
-            if (!confirm('Êtes-vous sûr de vouloir tout réinitialiser ? Cette action est irréversible.')) return;
+ // Fonction pour réinitialiser la base de données
+function resetDatabase() {
+    const confirmationMessage = "Es-tu certain de vouloir tout effacer ? Si oui, écris 'je valide' pour confirmer.";
+    const userInput = prompt(confirmationMessage);
 
-            // Vider les données
-            stock = [];
-            historique = [];
-            dernieresActions = [];
+    if (userInput === "je valide") {
+        // Vider les données
+        stock = [];
+        historique = [];
+        dernieresActions = [];
 
-            // Mettre à jour le stockage local
-            updateStorage();
+        // Mettre à jour le stockage local
+        updateStorage();
 
-            // Recharger l'affichage
-            showStock();
-            showHistorique();
-            updateBilan();
-        }
+        // Recharger l'affichage
+        showStock();
+        showHistorique();
+        updateBilan();
+
+        alert("La base de données a été réinitialisée avec succès.");
+    } else {
+        alert("Réinitialisation annulée.");
+    }
+}
 
         // Sauvegarder les données
         function updateStorage() {
