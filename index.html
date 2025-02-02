@@ -313,265 +313,274 @@
 
         // Fonction pour ajouter un nouveau produit
         function nouvelAjout() {
-            const dialog = document.createElement('div');
-            dialog.style.position = 'fixed';
-            dialog.style.top = '50%';
-            dialog.style.left = '50%';
-            dialog.style.transform = 'translate(-50%, -50%)';
-            dialog.style.backgroundColor = 'white';
-            dialog.style.padding = '20px';
-            dialog.style.borderRadius = '10px';
-            dialog.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
-            dialog.style.zIndex = '1000';
+    const dialog = document.createElement('div');
+    dialog.style.position = 'fixed';
+    dialog.style.top = '50%';
+    dialog.style.left = '50%';
+    dialog.style.transform = 'translate(-50%, -50%)';
+    dialog.style.backgroundColor = 'white';
+    dialog.style.padding = '20px';
+    dialog.style.borderRadius = '10px';
+    dialog.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
+    dialog.style.zIndex = '1000';
 
-            dialog.innerHTML = `
-                <h3>Nouvel Ajout</h3>
-                <label for="nom">Nom du produit :</label>
-                <input type="text" id="nom" placeholder="Nom" style="width: 100%; margin-bottom: 10px;" autofocus>
-                <label for="quantite">Quantité :</label>
-                <input type="number" id="quantite" placeholder="Quantité" style="width: 100%; margin-bottom: 10px;">
-                <label for="prix">Prix d'achat unitaire :</label>
-                <input type="number" id="prix" placeholder="Prix" style="width: 100%; margin-bottom: 10px;">
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="validerAjout()" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px;">Valider</button>
-                    <button onclick="annulerAjout()" style="flex: 1; padding: 10px; background: #dc3545; color: white; border: none; border-radius: 5px;">Annuler</button>
-                </div>
-            `;
+    dialog.innerHTML = `
+        <h3>Nouvel Ajout</h3>
+        <label for="nom">Nom du produit :</label>
+        <input type="text" id="nom" placeholder="Nom" style="width: 100%; margin-bottom: 10px;" autofocus>
+        <label for="quantite">Quantité :</label>
+        <input type="number" id="quantite" placeholder="Quantité" style="width: 100%; margin-bottom: 10px;">
+        <label for="prixTotal">Prix total :</label>
+        <input type="number" id="prixTotal" placeholder="Prix total" style="width: 100%; margin-bottom: 10px;">
+        <div style="display: flex; gap: 10px;">
+            <button onclick="validerAjout()" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px;">Valider</button>
+            <button onclick="annulerAjout()" style="flex: 1; padding: 10px; background: #dc3545; color: white; border: none; border-radius: 5px;">Annuler</button>
+        </div>
+    `;
 
-            document.body.appendChild(dialog);
+    document.body.appendChild(dialog);
 
-            // Fonction pour valider l'ajout
-            window.validerAjout = function() {
-                const name = document.getElementById('nom').value.trim();
-                const quantity = parseFloat(document.getElementById('quantite').value);
-                const price = parseFloat(document.getElementById('prix').value);
+    // Fonction pour valider l'ajout
+    window.validerAjout = function() {
+        const name = document.getElementById('nom').value.trim();
+        const quantity = parseFloat(document.getElementById('quantite').value);
+        const prixTotal = parseFloat(document.getElementById('prixTotal').value);
 
-                if (!name) {
-                    alert('Veuillez entrer un nom de produit.');
-                    return;
-                }
-
-                if (!quantity || isNaN(quantity) || quantity <= 0) {
-                    alert('Quantité invalide !');
-                    return;
-                }
-
-                if (!price || isNaN(price) || price <= 0) {
-                    alert('Prix invalide !');
-                    return;
-                }
-
-                // Vérifier si le produit existe déjà
-                const existingProduct = stock.find(p => p.name === name);
-                if (existingProduct) {
-                    // Mise à jour du produit existant
-                    const totalValueBefore = existingProduct.quantity * existingProduct.price;
-                    const totalValueAdded = quantity * price;
-                    const totalQuantity = existingProduct.quantity + quantity;
-                    const newAveragePrice = (totalValueBefore + totalValueAdded) / totalQuantity;
-
-                    existingProduct.quantity = totalQuantity;
-                    existingProduct.price = newAveragePrice;
-                } else {
-                    // Ajouter un nouveau produit
-                    stock.push({ name, quantity, price });
-                }
-
-                // Enregistrer l'action dans l'historique
-                historique.push({
-                    date: new Date().toLocaleString(),
-                    type: 'Ajout',
-                    product: name,
-                    quantity: quantity,
-                    price: price
-                });
-
-                // Enregistrer l'action pour annulation
-                dernieresActions.push({ type: 'ajout', product: name, quantity, price });
-
-                updateStorage();
-                showStock();
-                showHistorique();
-                updateBilan();
-
-                // Supprimer la boîte de dialogue
-                document.body.removeChild(dialog);
-            };
-
-            // Fonction pour annuler l'ajout
-            window.annulerAjout = function() {
-                document.body.removeChild(dialog);
-            };
+        if (!name) {
+            alert('Veuillez entrer un nom de produit.');
+            return;
         }
+
+        if (!quantity || isNaN(quantity) || quantity <= 0) {
+            alert('Quantité invalide !');
+            return;
+        }
+
+        if (!prixTotal || isNaN(prixTotal) || prixTotal <= 0) {
+            alert('Prix total invalide !');
+            return;
+        }
+
+        // Calcul du prix unitaire
+        const price = prixTotal / quantity;
+
+        // Vérifier si le produit existe déjà
+        const existingProduct = stock.find(p => p.name === name);
+        if (existingProduct) {
+            // Mise à jour du produit existant
+            const totalValueBefore = existingProduct.quantity * existingProduct.price;
+            const totalValueAdded = quantity * price;
+            const totalQuantity = existingProduct.quantity + quantity;
+            const newAveragePrice = (totalValueBefore + totalValueAdded) / totalQuantity;
+
+            existingProduct.quantity = totalQuantity;
+            existingProduct.price = newAveragePrice;
+        } else {
+            // Ajouter un nouveau produit
+            stock.push({ name, quantity, price });
+        }
+
+        // Enregistrer l'action dans l'historique
+        historique.push({
+            date: new Date().toLocaleString(),
+            type: 'Ajout',
+            product: name,
+            quantity: quantity,
+            price: price
+        });
+
+        // Enregistrer l'action pour annulation
+        dernieresActions.push({ type: 'ajout', product: name, quantity, price });
+
+        updateStorage();
+        showStock();
+        showHistorique();
+        updateBilan();
+
+        // Supprimer la boîte de dialogue
+        document.body.removeChild(dialog);
+    };
+
+    // Fonction pour annuler l'ajout
+    window.annulerAjout = function() {
+        document.body.removeChild(dialog);
+    };
+}
 
         // Fonction pour acheter un produit existant
         function achatProduit(productName) {
-            const product = stock.find(p => p.name === productName);
-            if (!product) return;
+    const product = stock.find(p => p.name === productName);
+    if (!product) return;
 
-            const dialog = document.createElement('div');
-            dialog.style.position = 'fixed';
-            dialog.style.top = '50%';
-            dialog.style.left = '50%';
-            dialog.style.transform = 'translate(-50%, -50%)';
-            dialog.style.backgroundColor = 'white';
-            dialog.style.padding = '20px';
-            dialog.style.borderRadius = '10px';
-            dialog.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
-            dialog.style.zIndex = '1000';
+    const dialog = document.createElement('div');
+    dialog.style.position = 'fixed';
+    dialog.style.top = '50%';
+    dialog.style.left = '50%';
+    dialog.style.transform = 'translate(-50%, -50%)';
+    dialog.style.backgroundColor = 'white';
+    dialog.style.padding = '20px';
+    dialog.style.borderRadius = '10px';
+    dialog.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
+    dialog.style.zIndex = '1000';
 
-            dialog.innerHTML = `
-                <h3>Achat de ${productName}</h3>
-                <label for="quantity">Quantité :</label>
-                <input type="number" id="quantity" placeholder="Quantité" style="width: 100%; margin-bottom: 10px;">
-                <label for="price">Prix unitaire :</label>
-                <input type="number" id="price" placeholder="Prix unitaire" style="width: 100%; margin-bottom: 10px;">
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="validerAchat('${productName}')" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px;">Valider</button>
-                    <button onclick="annulerAchat()" style="flex: 1; padding: 10px; background: #dc3545; color: white; border: none; border-radius: 5px;">Annuler</button>
-                </div>
-            `;
+    dialog.innerHTML = `
+        <h3>Achat de ${productName}</h3>
+        <label for="quantity">Quantité :</label>
+        <input type="number" id="quantity" placeholder="Quantité" style="width: 100%; margin-bottom: 10px;">
+        <label for="prixTotal">Prix total :</label>
+        <input type="number" id="prixTotal" placeholder="Prix total" style="width: 100%; margin-bottom: 10px;">
+        <div style="display: flex; gap: 10px;">
+            <button onclick="validerAchat('${productName}')" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px;">Valider</button>
+            <button onclick="annulerAchat()" style="flex: 1; padding: 10px; background: #dc3545; color: white; border: none; border-radius: 5px;">Annuler</button>
+        </div>
+    `;
 
-            document.body.appendChild(dialog);
+    document.body.appendChild(dialog);
 
-            // Focus automatique sur le champ de quantité
-            document.getElementById('quantity').focus();
+    // Focus automatique sur le champ de quantité
+    document.getElementById('quantity').focus();
 
-            // Fonction pour valider l'achat
-            window.validerAchat = function(productName) {
-                const quantity = parseFloat(document.getElementById('quantity').value);
-                const price = parseFloat(document.getElementById('price').value);
+    // Fonction pour valider l'achat
+    window.validerAchat = function(productName) {
+        const quantity = parseFloat(document.getElementById('quantity').value);
+        const prixTotal = parseFloat(document.getElementById('prixTotal').value);
 
-                if (!quantity || isNaN(quantity) || quantity <= 0) {
-                    alert('Quantité invalide !');
-                    return;
-                }
-
-                if (!price || isNaN(price) || price <= 0) {
-                    alert('Prix invalide !');
-                    return;
-                }
-
-                // Calcul du nouveau prix moyen
-                const product = stock.find(p => p.name === productName);
-                const totalValueBefore = product.quantity * product.price;
-                const totalValueAdded = quantity * price;
-                const totalQuantity = product.quantity + quantity;
-                const newAveragePrice = (totalValueBefore + totalValueAdded) / totalQuantity;
-
-                // Mise à jour du produit
-                product.quantity = totalQuantity;
-                product.price = newAveragePrice;
-
-                // Enregistrer l'action dans l'historique
-                historique.push({
-                    date: new Date().toLocaleString(),
-                    type: 'Achat',
-                    product: productName,
-                    quantity: quantity,
-                    price: price
-                });
-
-                // Enregistrer l'action pour annulation
-                dernieresActions.push({ type: 'achat', product: productName, quantity, price });
-
-                updateStorage();
-                showStock();
-                showHistorique();
-                updateBilan();
-
-                // Supprimer la boîte de dialogue
-                document.body.removeChild(dialog);
-            };
-
-            // Fonction pour annuler l'achat
-            window.annulerAchat = function() {
-                document.body.removeChild(dialog);
-            };
+        if (!quantity || isNaN(quantity) || quantity <= 0) {
+            alert('Quantité invalide !');
+            return;
         }
+
+        if (!prixTotal || isNaN(prixTotal) || prixTotal <= 0) {
+            alert('Prix total invalide !');
+            return;
+        }
+
+        // Calcul du prix unitaire
+        const price = prixTotal / quantity;
+
+        // Calcul du nouveau prix moyen
+        const product = stock.find(p => p.name === productName);
+        const totalValueBefore = product.quantity * product.price;
+        const totalValueAdded = quantity * price;
+        const totalQuantity = product.quantity + quantity;
+        const newAveragePrice = (totalValueBefore + totalValueAdded) / totalQuantity;
+
+        // Mise à jour du produit
+        product.quantity = totalQuantity;
+        product.price = newAveragePrice;
+
+        // Enregistrer l'action dans l'historique
+        historique.push({
+            date: new Date().toLocaleString(),
+            type: 'Achat',
+            product: productName,
+            quantity: quantity,
+            price: price
+        });
+
+        // Enregistrer l'action pour annulation
+        dernieresActions.push({ type: 'achat', product: productName, quantity, price });
+
+        updateStorage();
+        showStock();
+        showHistorique();
+        updateBilan();
+
+        // Supprimer la boîte de dialogue
+        document.body.removeChild(dialog);
+    };
+
+    // Fonction pour annuler l'achat
+    window.annulerAchat = function() {
+        document.body.removeChild(dialog);
+    };
+}
 
         // Fonction pour vendre un produit
-        function quickAction(action, productName) {
-            const product = stock.find(p => p.name === productName);
-            if (!product) return;
+      function quickAction(action, productName) {
+    const product = stock.find(p => p.name === productName);
+    if (!product) return;
 
-            const dialog = document.createElement('div');
-            dialog.style.position = 'fixed';
-            dialog.style.top = '50%';
-            dialog.style.left = '50%';
-            dialog.style.transform = 'translate(-50%, -50%)';
-            dialog.style.backgroundColor = 'white';
-            dialog.style.padding = '20px';
-            dialog.style.borderRadius = '10px';
-            dialog.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
-            dialog.style.zIndex = '1000';
+    const dialog = document.createElement('div');
+    dialog.style.position = 'fixed';
+    dialog.style.top = '50%';
+    dialog.style.left = '50%';
+    dialog.style.transform = 'translate(-50%, -50%)';
+    dialog.style.backgroundColor = 'white';
+    dialog.style.padding = '20px';
+    dialog.style.borderRadius = '10px';
+    dialog.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
+    dialog.style.zIndex = '1000';
 
-            dialog.innerHTML = `
-                <h3>Vente de ${productName}</h3>
-                <label for="quantity">Quantité :</label>
-                <input type="number" id="quantity" placeholder="Quantité" style="width: 100%; margin-bottom: 10px;">
-                <label for="price">Prix unitaire :</label>
-                <input type="number" id="price" placeholder="Prix unitaire" style="width: 100%; margin-bottom: 10px;">
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="validerVente('${productName}')" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px;">Valider</button>
-                    <button onclick="annulerVente()" style="flex: 1; padding: 10px; background: #dc3545; color: white; border: none; border-radius: 5px;">Annuler</button>
-                </div>
-            `;
+    dialog.innerHTML = `
+        <h3>Vente de ${productName}</h3>
+        <label for="quantity">Quantité :</label>
+        <input type="number" id="quantity" placeholder="Quantité" style="width: 100%; margin-bottom: 10px;">
+        <label for="prixTotal">Prix total :</label>
+        <input type="number" id="prixTotal" placeholder="Prix total" style="width: 100%; margin-bottom: 10px;">
+        <div style="display: flex; gap: 10px;">
+            <button onclick="validerVente('${productName}')" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px;">Valider</button>
+            <button onclick="annulerVente()" style="flex: 1; padding: 10px; background: #dc3545; color: white; border: none; border-radius: 5px;">Annuler</button>
+        </div>
+    `;
 
-            document.body.appendChild(dialog);
+    document.body.appendChild(dialog);
 
-            // Focus automatique sur le champ de quantité
-            document.getElementById('quantity').focus();
+    // Focus automatique sur le champ de quantité
+    document.getElementById('quantity').focus();
 
-            // Fonction pour valider la vente
-            window.validerVente = function(productName) {
-                const quantity = parseFloat(document.getElementById('quantity').value);
-                const price = parseFloat(document.getElementById('price').value);
+    // Fonction pour valider la vente
+    window.validerVente = function(productName) {
+        const quantity = parseFloat(document.getElementById('quantity').value);
+        const prixTotal = parseFloat(document.getElementById('prixTotal').value);
 
-                if (!quantity || isNaN(quantity) || quantity <= 0) {
-                    alert('Quantité invalide !');
-                    return;
-                }
-
-                if (product.quantity < quantity) {
-                    alert(`Stock insuffisant ! (Stock actuel: ${product.quantity})`);
-                    return;
-                }
-
-                if (!price || isNaN(price) || price <= 0) {
-                    alert('Prix de vente invalide !');
-                    return;
-                }
-
-                // Réduire la quantité
-                product.quantity -= quantity;
-
-                // Enregistrer la vente dans l'historique
-                historique.push({
-                    date: new Date().toLocaleString(),
-                    type: 'Vente',
-                    product: productName,
-                    quantity: quantity,
-                    price: price
-                });
-
-                // Enregistrer l'action pour annulation
-                dernieresActions.push({ type: 'vente', product: productName, quantity, price });
-
-                updateStorage();
-                showStock();
-                showHistorique();
-                updateBilan();
-
-                // Supprimer la boîte de dialogue
-                document.body.removeChild(dialog);
-            };
-
-            // Fonction pour annuler la vente
-            window.annulerVente = function() {
-                document.body.removeChild(dialog);
-            };
+        if (!quantity || isNaN(quantity) || quantity <= 0) {
+            alert('Quantité invalide !');
+            return;
         }
+
+        if (product.quantity < quantity) {
+            alert(`Stock insuffisant ! (Stock actuel: ${product.quantity})`);
+            return;
+        }
+
+        if (!prixTotal || isNaN(prixTotal) || prixTotal <= 0) {
+            alert('Prix total invalide !');
+            return;
+        }
+
+        // Calcul du prix unitaire
+        const price = prixTotal / quantity;
+
+        // Réduire la quantité
+        product.quantity -= quantity;
+
+        // Enregistrer la vente dans l'historique
+        historique.push({
+            date: new Date().toLocaleString(),
+            type: 'Vente',
+            product: productName,
+            quantity: quantity,
+            price: price
+        });
+
+        // Enregistrer l'action pour annulation
+        dernieresActions.push({ type: 'vente', product: productName, quantity, price });
+
+        updateStorage();
+        showStock();
+        showHistorique();
+        updateBilan();
+
+        // Supprimer la boîte de dialogue
+        document.body.removeChild(dialog);
+    };
+
+    // Fonction pour annuler la vente
+    window.annulerVente = function() {
+        document.body.removeChild(dialog);
+    };
+}
 
         // Fonction pour supprimer un produit
         function supprimerProduit(productName) {
@@ -628,10 +637,10 @@
             updateBilan();
         }
 
- // Fonction pour réinitialiser la base de données
-function resetDatabase() {
+        // Fonction pour réinitialiser la base de données
+        function resetDatabase() {
     const confirmationMessage = "Es-tu certain de vouloir tout effacer ? Si oui, écris 'je valide' pour confirmer.";
-    const userInput = prompt(confirmationMessage);
+    const userInput = prompt(confirmationMessage, ""); // Curseur dans la boîte de saisie
 
     if (userInput === "je valide") {
         // Vider les données
