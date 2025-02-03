@@ -250,8 +250,14 @@
         }
 
         // Fonction pour afficher l'historique
-        function showHistorique() {
-    const html = historique.map((transaction, index) => `
+       function showHistorique() {
+    // Trier l'historique par date (du plus récent au plus ancien)
+    const historiqueTrie = historique.sort((a, b) => {
+        return new Date(b.date) - new Date(a.date); // Tri décroissant
+    });
+
+    // Générer le HTML pour l'historique trié
+    const html = historiqueTrie.map((transaction, index) => `
         <tr>
             <td>${transaction.date}</td>
             <td>${transaction.type}</td>
@@ -262,12 +268,13 @@
             <td>
                 <button class="action-btn supprimer-btn" 
                         onclick="supprimerTransaction(${index})">
-                    🗑️ 
+                    🗑️
                 </button>
             </td>
         </tr>
     `).join('');
 
+    // Afficher l'historique trié
     document.getElementById('historiqueContent').innerHTML = html;
 }
 
