@@ -258,23 +258,23 @@
 
     // Générer le HTML pour l'historique trié
     const html = historiqueTrie.map((transaction, index) => {
-        // Définir la couleur et le style en fonction du type de transaction
-        let prixStyle = '';
+        // Définir la couleur de fond en fonction du type de transaction
+        let ligneStyle = '';
         if (transaction.type === 'Vente') {
-            prixStyle = 'color: green; font-weight: bold;'; // Vert gras pour les ventes
+            ligneStyle = 'background-color: #e6ffe6;'; // Vert clair pour les ventes
         } else if (transaction.type === 'Ajout' || transaction.type === 'Achat') {
             if (transaction.price > 0) {
-                prixStyle = 'color: red; font-weight: bold;'; // Rouge gras pour les ajouts/achats avec prix > 0
+                ligneStyle = 'background-color: #ffe6e6;'; // Rouge clair pour les ajouts/achats avec prix > 0
             }
         }
 
         return `
-            <tr>
+            <tr style="${ligneStyle}">
                 <td>${transaction.date}</td>
                 <td>${transaction.type}</td>
                 <td>${transaction.product}</td>
                 <td>${transaction.quantity}</td>
-                <td style="${prixStyle}">${transaction.price.toFixed(2)}€</td>
+                <td>${transaction.price.toFixed(2)}€</td>
                 <td>${(transaction.quantity * transaction.price).toFixed(2)}€</td>
                 <td>
                     <button class="action-btn supprimer-btn" 
