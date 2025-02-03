@@ -306,31 +306,47 @@ function supprimerTransaction(index) {
 
         // Fonction pour afficher le bilan
         function updateBilan() {
-            const totalAchats = historique
-                .filter(t => t.type === 'Ajout' || t.type === 'Achat')
-                .reduce((sum, t) => sum + t.quantity * t.price, 0);
+    // Calcul du capital
+    const totalAchats = historique
+        .filter(t => t.type === 'Ajout' || t.type === 'Achat')
+        .reduce((sum, t) => sum + t.quantity * t.price, 0);
 
-            const totalVentes = historique
-                .filter(t => t.type === 'Vente')
-                .reduce((sum, t) => sum + t.quantity * t.price, 0);
+    const totalVentes = historique
+        .filter(t => t.type === 'Vente')
+        .reduce((sum, t) => sum + t.quantity * t.price, 0);
 
-            const capital = totalVentes - totalAchats;
-            document.getElementById('capitalValue').textContent = `${capital.toFixed(2)}€`;
+    const capital = totalVentes - totalAchats;
 
-            const bilanHtml = `
-                <tr>
-                    <td>Achats</td>
-                    <td>${historique.filter(t => t.type === 'Ajout' || t.type === 'Achat').reduce((sum, t) => sum + t.quantity, 0)}</td>
-                    <td>${totalAchats.toFixed(2)}€</td>
-                </tr>
-                <tr>
-                    <td>Ventes</td>
-                    <td>${historique.filter(t => t.type === 'Vente').reduce((sum, t) => sum + t.quantity, 0)}</td>
-                    <td>${totalVentes.toFixed(2)}€</td>
-                </tr>
-            `;
-            document.getElementById('bilanContent').innerHTML = bilanHtml;
-        }
+    // Récupérer l'élément qui affiche le capital
+    const capitalElement = document.getElementById('capitalValue');
+
+    // Appliquer le style en fonction de la valeur du capital
+    if (capital >= 0) {
+        capitalElement.style.color = 'green'; // Texte vert
+        capitalElement.style.fontWeight = 'bold'; // Texte gras
+    } else {
+        capitalElement.style.color = 'red'; // Texte rouge
+        capitalElement.style.fontWeight = 'bold'; // Texte gras
+    }
+
+    // Afficher le capital
+    capitalElement.textContent = `${capital.toFixed(2)}€`;
+
+    // Mettre à jour le résumé des achats et ventes
+    const bilanHtml = `
+        <tr>
+            <td>Achats</td>
+            <td>${historique.filter(t => t.type === 'Ajout' || t.type === 'Achat').reduce((sum, t) => sum + t.quantity, 0)}</td>
+            <td>${totalAchats.toFixed(2)}€</td>
+        </tr>
+        <tr>
+            <td>Ventes</td>
+            <td>${historique.filter(t => t.type === 'Vente').reduce((sum, t) => sum + t.quantity, 0)}</td>
+            <td>${totalVentes.toFixed(2)}€</td>
+        </tr>
+    `;
+    document.getElementById('bilanContent').innerHTML = bilanHtml;
+}
 
         // Fonction pour ajouter un nouveau produit
         function nouvelAjout() {
