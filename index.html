@@ -257,22 +257,34 @@
     });
 
     // Générer le HTML pour l'historique trié
-    const html = historiqueTrie.map((transaction, index) => `
-        <tr>
-            <td>${transaction.date}</td>
-            <td>${transaction.type}</td>
-            <td>${transaction.product}</td>
-            <td>${transaction.quantity}</td>
-            <td>${transaction.price.toFixed(2)}€</td>
-            <td>${(transaction.quantity * transaction.price).toFixed(2)}€</td>
-            <td>
-                <button class="action-btn supprimer-btn" 
-                        onclick="supprimerTransaction(${index})">
-                    🗑️
-                </button>
-            </td>
-        </tr>
-    `).join('');
+    const html = historiqueTrie.map((transaction, index) => {
+        // Définir la couleur et le style en fonction du type de transaction
+        let prixStyle = '';
+        if (transaction.type === 'Vente') {
+            prixStyle = 'color: green; font-weight: bold;'; // Vert gras pour les ventes
+        } else if (transaction.type === 'Ajout' || transaction.type === 'Achat') {
+            if (transaction.price > 0) {
+                prixStyle = 'color: red; font-weight: bold;'; // Rouge gras pour les ajouts/achats avec prix > 0
+            }
+        }
+
+        return `
+            <tr>
+                <td>${transaction.date}</td>
+                <td>${transaction.type}</td>
+                <td>${transaction.product}</td>
+                <td>${transaction.quantity}</td>
+                <td style="${prixStyle}">${transaction.price.toFixed(2)}€</td>
+                <td>${(transaction.quantity * transaction.price).toFixed(2)}€</td>
+                <td>
+                    <button class="action-btn supprimer-btn" 
+                            onclick="supprimerTransaction(${index})">
+                        🗑️
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
 
     // Afficher l'historique trié
     document.getElementById('historiqueContent').innerHTML = html;
